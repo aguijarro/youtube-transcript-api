@@ -1,0 +1,12 @@
+[tool.pytest.ini_options]
+minversion = "6.0"
+addopts = "-ra -q"
+testpaths = ["tests"]
+python_files = ["test_*.py", "*_test.py"]
+asyncio_mode = "strict"
+asyncio_default_fixture_loop_scope = "function"
+cache_dir = "/tmp/.pytest_cache"
+filterwarnings = [
+    "ignore::DeprecationWarning",
+    "ignore::UserWarning",
+]
