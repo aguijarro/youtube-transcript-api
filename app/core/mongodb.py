@@ -1,18 +1,19 @@
 from motor.motor_asyncio import AsyncIOMotorClient
-from app.core.config import get_settings
-
-settings = get_settings()
+from app.core.config import settings
 
 class MongoDB:
     client: AsyncIOMotorClient = None
     db = None
 
-db = MongoDB()
+mongodb = MongoDB()
 
 async def connect_to_mongo():
-    db.client = AsyncIOMotorClient(settings.MONGODB_URL)
-    db.db = db.client[settings.MONGODB_DB_NAME]
+    mongodb.client = AsyncIOMotorClient(settings.MONGODB_URL)
+    mongodb.db = mongodb.client[settings.MONGODB_DB]
 
 async def close_mongo_connection():
-    if db.client is not None:
-        db.client.close()
+    if mongodb.client:
+        mongodb.client.close()
+
+async def get_database():
+    return mongodb.db
