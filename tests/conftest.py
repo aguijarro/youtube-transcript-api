@@ -1,11 +1,14 @@
 import pytest
 from fastapi.testclient import TestClient
 from app.main import app
+from motor.motor_asyncio import AsyncIOMotorClient
+from unittest.mock import Mock
 
 @pytest.fixture
-def test_app():
-    """
-    Create a test client for the FastAPI application
-    """
-    with TestClient(app) as test_client:
-        yield test_client
+def client():
+    return TestClient(app)
+
+@pytest.fixture
+def mock_db():
+    # Mock MongoDB client
+    return Mock(spec=AsyncIOMotorClient)
