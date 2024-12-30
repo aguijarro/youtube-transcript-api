@@ -74,3 +74,10 @@ curl http://localhost:8005/api/v1/transcript/Tm_2RZm8JB8
 curl http://localhost:8005/api/v1/transcript/
 
 docker-compose -f docker-compose.dev.yml exec -u appuser endor_python_mongodb_dev python -m pytest -v
+
+
+curl -X POST http://localhost:8005/api/v1/transcript/batch \
+-H "Content-Type: application/json" \
+-d '{"video_ids": ["Tm_2RZm8JB8", "GAe1IQtHqVU"], "languages": ["en", "de"]}'
+
+

@@ -1,6 +1,7 @@
 import pytest
 from unittest.mock import patch
 from bson import ObjectId
+from fastapi.testclient import TestClient
 
 # Mock data for tests
 MOCK_STORED_TRANSCRIPTS = [
@@ -61,3 +62,64 @@ async def test_get_all_transcripts_empty(test_app):
         assert response.status_code == 200
         assert response.json() == []
         mock_get.assert_called_once()
+
+@pytest.fixture
+def mock_transcript_data():
+    return {
+        'video1': [
+            {'text': 'Hello', 'start': 0.0, 'duration': 1.0},
+            {'text': 'World', 'start': 1.0, 'duration': 1.0}
+        ],
+        'video2': [
+            {'text': 'Test', 'start': 0.0, 'duration': 1.0},
+            {'text': 'Video', 'start': 1.0, 'duration': 1.0}
+        ]
+    }
+
+@pytest.mark.asyncio
+async def test_get_multiple_transcripts(client: TestClient, mock_db, mock_transcript_data):
+    # Mock the YouTubeTranscriptApi.get_transcripts method
+    with patch('app.api.v1.endpoints.transcript.YouTubeTranscriptApi.get_transcripts') as mock_get_transcripts:
+        # Set up the mock to return our test data
+        mock_get_transcripts.return_value = (mock_transcript_data, {})
+        
+        # Test data
+        test_payload = {
+            "video_ids": ["video1", "video2"],
+            "languages": ["en", "de"]
+        }
+        
+        # Make the request
+        response = client.post("/api/v1/transcript/batch", json=test_payload)
+        
+        # Assertions
+        assert response.status_code == 200
+        assert response.json() == {"transcripts": mock_transcript_data}
+        
+        # Verify the mock was called correctly
+        mock_get_transcripts.assert_called_once_with(
+            ["video1", "video2"],
+            languages=["en", "de"]
+        )
+
+@pytest.mark.asyncio
+async def test_get_multiple_transcripts_no_transcript(client: TestClient, mock_db):
+    with patch('app.api.v1.endpoints.transcript.YouTubeTranscriptApi.get_transcripts') as mock_get_transcripts:
+        mock_get_transcripts.side_effect = NoTranscriptFound()
+        
+        response = client.post("/api/v1/transcript/batch", 
+                             json={"video_ids": ["invalid_id"], "languages": ["en"]})
+        
+        assert response.status_code == 404
+        assert "No transcripts found" in response.json()["detail"]
+
+@pytest.mark.asyncio
+async def test_get_multiple_transcripts_disabled(client: TestClient, mock_db):
+    with patch('app.api.v1.endpoints.transcript.YouTubeTranscriptApi.get_transcripts') as mock_get_transcripts:
+        mock_get_transcripts.side_effect = TranscriptsDisabled()
+        
+        response = client.post("/api/v1/transcript/batch", 
+                             json={"video_ids": ["disabled_id"], "languages": ["en"]})
+        
+        assert response.status_code == 404
+        assert "Transcripts are disabled" in response.json()["detail"]
