@@ -55,7 +55,7 @@ docker-compose -f infrastructure/docker/development/docker-compose.dev.yml up -d
 docker-compose -f docker-compose.dev.yml up -d --build
 
 #### See logs
-docker-compose -f docker-compose.dev.yml logs -f endor_python_dev
+docker-compose -f docker-compose.dev.yml logs -f endor_python_mongodb_dev
 
 
 
@@ -67,3 +67,9 @@ curl -X POST "http://localhost:8005/api/v1/test/?name=test1"
 
 #### Get all test records
 curl http://localhost:8005/api/v1/test/
+
+
+#### Get transcript
+curl http://localhost:8005/api/v1/transcript/Tm_2RZm8JB8
+
+docker-compose -f docker-compose.dev.yml exec -u appuser endor_python_mongodb_dev python -m pytest -v

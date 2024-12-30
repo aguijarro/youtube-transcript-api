@@ -1,11 +1,12 @@
 from app.core.config import settings
-from app.api.v1.endpoints import health, test
 from app.services.base_service import BaseService
+from fastapi import FastAPI
+from app.api.v1.router import api_router
 
 base = BaseService(settings, "endor-service")
 app = base.app
 
-app.include_router(health.router, prefix=settings.API_V1_STR, tags=["health"])
-app.include_router(test.router, prefix=f"{settings.API_V1_STR}/test", tags=["test"])
+# Mount all routes through the api_router
+app.include_router(api_router, prefix=settings.API_V1_STR)
 
 
