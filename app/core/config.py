@@ -9,12 +9,12 @@ log = logging.getLogger("uvicorn")
 
 
 class Settings(BaseSettings):
-    PROJECT_NAME: str = "FastAPI App"
-    VERSION: str = "0.1.0"
+    PROJECT_NAME: str = "YouTube Transcript API"
+    VERSION: str = "1.0.0"
     API_V1_STR: str = "/api/v1"
     DEBUG: bool = False
-    MONGODB_URL: str = "mongodb://endor_python_mongodb:27017"
-    MONGODB_DB_NAME: str = "endor_python_dev"
+    MONGODB_URL: str = "mongodb://mongodb:27017"
+    MONGODB_DB: str = "youtube_transcript"
     ALLOWED_ORIGINS: str = "http://localhost:3000"
     ENVIRONMENT: str = "development"
     
@@ -24,6 +24,7 @@ class Settings(BaseSettings):
     
     class Config:
         env_file = ".env.development"
+        case_sensitive = True
 
 @lru_cache
 def get_settings() -> Settings:

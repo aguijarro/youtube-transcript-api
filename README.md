@@ -71,5 +71,6 @@ curl http://localhost:8005/api/v1/test/
 
 #### Get transcript
 curl http://localhost:8005/api/v1/transcript/Tm_2RZm8JB8
+curl http://localhost:8005/api/v1/transcript/
 
 docker-compose -f docker-compose.dev.yml exec -u appuser endor_python_mongodb_dev python -m pytest -v
